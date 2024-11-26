@@ -181,25 +181,7 @@ router.post('/caption-image', jsonParser, async (request, response) => {
 
 router.post('/transcribe-audio', urlencodedParser, async (request, response) => {
     try {
-        let apiUrl = 'https://api.yuziyou.top/v1/images/generations';
-
-
-        if (request.body.reverse_proxy) {
-            apiUrl = `${request.body.reverse_proxy}/images/generations`;
-        }
-
-        console.log(request.body.reverse_proxy);
-
-        let key = readSecret(request.user.directories, SECRET_KEYS.OPENAI);
-
-        console.log(key);
-
-        if (request.body.reverse_proxy && request.body.proxy_password) {
-            key = request.body.proxy_password;
-        }
-        console.log(key);
-
-        // const key = readSecret(request.user.directories, SECRET_KEYS.OPENAI);
+        const key = readSecret(request.user.directories, SECRET_KEYS.OPENAI);
 
         if (!key) {
             console.log('No OpenAI key found');
@@ -220,7 +202,7 @@ router.post('/transcribe-audio', urlencodedParser, async (request, response) => 
             formData.append('language', request.body.language);
         }
 
-        const result = await fetch(apiUrl, {
+        const result = await fetch('https://api.openai.com/v1/audio/transcriptions', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${key}`,
@@ -247,34 +229,14 @@ router.post('/transcribe-audio', urlencodedParser, async (request, response) => 
 
 router.post('/generate-voice', jsonParser, async (request, response) => {
     try {
-        let apiUrl = 'https://api.yuziyou.top/v1/images/generations';
-
-
-        if (request.body.reverse_proxy) {
-            apiUrl = `${request.body.reverse_proxy}/images/generations`;
-        }
-
-        console.log(request.body.reverse_proxy);
-
-        let key = readSecret(request.user.directories, SECRET_KEYS.OPENAI);
-
-        console.log(key);
-
-        if (request.body.reverse_proxy && request.body.proxy_password) {
-            key = request.body.proxy_password;
-        }
-        console.log(key);
-
-        // const key = readSecret(request.user.directories, SECRET_KEYS.OPENAI);
+        const key = readSecret(request.user.directories, SECRET_KEYS.OPENAI);
 
         if (!key) {
             console.log('No OpenAI key found');
             return response.sendStatus(400);
         }
 
-        console.log('OpenAI request', request.body);
-
-        const result = await fetch(apiUrl, {
+        const result = await fetch('https://api.openai.com/v1/audio/speech', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -306,25 +268,7 @@ router.post('/generate-voice', jsonParser, async (request, response) => {
 
 router.post('/generate-image', jsonParser, async (request, response) => {
     try {
-        let apiUrl = 'https://api.yuziyou.top/v1/images/generations';
-
-
-        if (request.body.reverse_proxy) {
-            apiUrl = `${request.body.reverse_proxy}/images/generations`;
-        }
-
-        console.log(request.body.reverse_proxy);
-
-        let key = readSecret(request.user.directories, SECRET_KEYS.OPENAI);
-
-        console.log(key);
-
-        if (request.body.reverse_proxy && request.body.proxy_password) {
-            key = request.body.proxy_password;
-        }
-        console.log(key);
-
-        // const key = readSecret(request.user.directories, SECRET_KEYS.OPENAI);
+        const key = readSecret(request.user.directories, SECRET_KEYS.OPENAI);
 
         if (!key) {
             console.log('No OpenAI key found');
@@ -333,24 +277,13 @@ router.post('/generate-image', jsonParser, async (request, response) => {
 
         console.log('OpenAI request', request.body);
 
-        const body = {
-            prompt: request.body.prompt,
-            model: request.body.model,
-            size: request.body.size,
-            n: request.body.n, 
-            quality: request.body.quality,
-            style: request.body.style,
-            response_format: request.body.response_format,
-        };
-
-        const result = await fetch(apiUrl, {
+        const result = await fetch('https://api.openai.com/v1/images/generations', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${key}`,
             },
-            body: JSON.stringify(body),
-            timeout: 0,
+            body: JSON.stringify(request.body),
         });
 
         if (!result.ok) {
