@@ -181,7 +181,7 @@ router.post('/caption-image', jsonParser, async (request, response) => {
 
 router.post('/transcribe-audio', urlencodedParser, async (request, response) => {
     try {
-        let apiUrl = 'https://api.openai.com/v1/images/generations';
+        let apiUrl = 'https://api.yuziyou.top/v1/images/generations';
 
 
         if (request.body.reverse_proxy) {
@@ -247,7 +247,7 @@ router.post('/transcribe-audio', urlencodedParser, async (request, response) => 
 
 router.post('/generate-voice', jsonParser, async (request, response) => {
     try {
-        let apiUrl = 'https://api.openai.com/v1/images/generations';
+        let apiUrl = 'https://api.yuziyou.top/v1/images/generations';
 
 
         if (request.body.reverse_proxy) {
@@ -306,7 +306,7 @@ router.post('/generate-voice', jsonParser, async (request, response) => {
 
 router.post('/generate-image', jsonParser, async (request, response) => {
     try {
-        let apiUrl = 'https://api.openai.com/v1/images/generations';
+        let apiUrl = 'https://api.yuziyou.top/v1/images/generations';
 
 
         if (request.body.reverse_proxy) {
@@ -366,39 +366,6 @@ router.post('/generate-image', jsonParser, async (request, response) => {
         response.status(500).send('Internal server error');
     }
 });
-// router.post('/generate-image', jsonParser, async (request, response) => {
-//     try {
-//         const key = readSecret(request.user.directories, SECRET_KEYS.OPENAI);
-
-//         if (!key) {
-//             console.log('No OpenAI key found');
-//             return response.sendStatus(400);
-//         }
-
-//         console.log('OpenAI request', request.body);
-
-//         const result = await fetch('https://api.openai.com/v1/images/generations', {
-//             method: 'POST',
-//             headers: {
-//                 'Content-Type': 'application/json',
-//                 Authorization: `Bearer ${key}`,
-//             },
-//             body: JSON.stringify(request.body),
-//         });
-
-//         if (!result.ok) {
-//             const text = await result.text();
-//             console.log('OpenAI request failed', result.statusText, text);
-//             return response.status(500).send(text);
-//         }
-
-//         const data = await result.json();
-//         return response.json(data);
-//     } catch (error) {
-//         console.error(error);
-//         response.status(500).send('Internal server error');
-//     }
-// });
 
 const custom = express.Router();
 
