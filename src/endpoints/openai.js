@@ -181,7 +181,25 @@ router.post('/caption-image', jsonParser, async (request, response) => {
 
 router.post('/transcribe-audio', urlencodedParser, async (request, response) => {
     try {
-        const key = readSecret(request.user.directories, SECRET_KEYS.OPENAI);
+        let apiUrl = 'https://api.openai.com/v1/images/generations';
+
+
+        if (request.body.reverse_proxy) {
+            apiUrl = `${request.body.reverse_proxy}/images/generations`;
+        }
+
+        console.log(request.body.reverse_proxy);
+
+        let key = readSecret(request.user.directories, SECRET_KEYS.OPENAI);
+
+        console.log(key);
+
+        if (request.body.reverse_proxy && request.body.proxy_password) {
+            key = request.body.proxy_password;
+        }
+        console.log(key);
+
+        // const key = readSecret(request.user.directories, SECRET_KEYS.OPENAI);
 
         if (!key) {
             console.log('No OpenAI key found');
@@ -202,7 +220,7 @@ router.post('/transcribe-audio', urlencodedParser, async (request, response) => 
             formData.append('language', request.body.language);
         }
 
-        const result = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+        const result = await fetch(apiUrl, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${key}`,
@@ -229,14 +247,34 @@ router.post('/transcribe-audio', urlencodedParser, async (request, response) => 
 
 router.post('/generate-voice', jsonParser, async (request, response) => {
     try {
-        const key = readSecret(request.user.directories, SECRET_KEYS.OPENAI);
+        let apiUrl = 'https://api.openai.com/v1/images/generations';
+
+
+        if (request.body.reverse_proxy) {
+            apiUrl = `${request.body.reverse_proxy}/images/generations`;
+        }
+
+        console.log(request.body.reverse_proxy);
+
+        let key = readSecret(request.user.directories, SECRET_KEYS.OPENAI);
+
+        console.log(key);
+
+        if (request.body.reverse_proxy && request.body.proxy_password) {
+            key = request.body.proxy_password;
+        }
+        console.log(key);
+
+        // const key = readSecret(request.user.directories, SECRET_KEYS.OPENAI);
 
         if (!key) {
             console.log('No OpenAI key found');
             return response.sendStatus(400);
         }
 
-        const result = await fetch('https://api.openai.com/v1/audio/speech', {
+        console.log('OpenAI request', request.body);
+
+        const result = await fetch(apiUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -268,7 +306,25 @@ router.post('/generate-voice', jsonParser, async (request, response) => {
 
 router.post('/generate-image', jsonParser, async (request, response) => {
     try {
-        const key = readSecret(request.user.directories, SECRET_KEYS.OPENAI);
+        let apiUrl = 'https://api.openai.com/v1/images/generations';
+
+
+        if (request.body.reverse_proxy) {
+            apiUrl = `${request.body.reverse_proxy}/images/generations`;
+        }
+
+        console.log(request.body.reverse_proxy);
+
+        let key = readSecret(request.user.directories, SECRET_KEYS.OPENAI);
+
+        console.log(key);
+
+        if (request.body.reverse_proxy && request.body.proxy_password) {
+            key = request.body.proxy_password;
+        }
+        console.log(key);
+
+        // const key = readSecret(request.user.directories, SECRET_KEYS.OPENAI);
 
         if (!key) {
             console.log('No OpenAI key found');
@@ -277,13 +333,24 @@ router.post('/generate-image', jsonParser, async (request, response) => {
 
         console.log('OpenAI request', request.body);
 
-        const result = await fetch('https://api.openai.com/v1/images/generations', {
+        const body = {
+            prompt: request.body.prompt,
+            model: request.body.model,
+            size: request.body.size,
+            n: request.body.n, 
+            quality: request.body.quality,
+            style: request.body.style,
+            response_format: request.body.response_format,
+        };
+
+        const result = await fetch(apiUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${key}`,
             },
-            body: JSON.stringify(request.body),
+            body: JSON.stringify(body),
+            timeout: 0,
         });
 
         if (!result.ok) {
@@ -299,6 +366,39 @@ router.post('/generate-image', jsonParser, async (request, response) => {
         response.status(500).send('Internal server error');
     }
 });
+// router.post('/generate-image', jsonParser, async (request, response) => {
+//     try {
+//         const key = readSecret(request.user.directories, SECRET_KEYS.OPENAI);
+
+//         if (!key) {
+//             console.log('No OpenAI key found');
+//             return response.sendStatus(400);
+//         }
+
+//         console.log('OpenAI request', request.body);
+
+//         const result = await fetch('https://api.openai.com/v1/images/generations', {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//                 Authorization: `Bearer ${key}`,
+//             },
+//             body: JSON.stringify(request.body),
+//         });
+
+//         if (!result.ok) {
+//             const text = await result.text();
+//             console.log('OpenAI request failed', result.statusText, text);
+//             return response.status(500).send(text);
+//         }
+
+//         const data = await result.json();
+//         return response.json(data);
+//     } catch (error) {
+//         console.error(error);
+//         response.status(500).send('Internal server error');
+//     }
+// });
 
 const custom = express.Router();
 
